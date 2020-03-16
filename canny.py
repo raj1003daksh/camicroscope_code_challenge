@@ -3,14 +3,14 @@ import cv2
 import matplotlib.pyplot as plt
 import math
 
-
+#Generating Gaussian Kernel with given sigma
 def gaussian_kernel(size, sigma=1):
     size = int(size) // 2
     x, y = np.mgrid[-size:size+1, -size:size+1]
     normal = 1 / (2.0 * np.pi * sigma**2)
     g =  np.exp(-((x**2 + y**2) / (2.0*sigma**2))) * normal
     return g
-
+#Applying sobel filter on image to return a sobel-filtered image and sobel gradient
 def sobelfilter(image):
     gx = np.array([[1.0, 0.0, -1.0], [2.0, 0.0, -2.0], [1.0, 0.0, -1.0]])
     gy = np.array([[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]])
@@ -26,6 +26,7 @@ def sobelfilter(image):
     sobel_filtered_image=sobel_filtered_image/np.max(sobel_filtered_image)
     return sobel_filtered_image,Gradient
 
+#Performing NonMaximum Suppresion
 def NonMaxSup(Gmag, Grad):
     NMS = np.zeros((Gmag.shape[0],Gmag.shape[1]),np.float64)
     for i in range(1, Gmag.shape[0] - 1):
@@ -52,6 +53,7 @@ def NonMaxSup(Gmag, Grad):
                     NMS[i,j] = 0
     return NMS
 
+#Threshold Hysteresis
 def DoThreshHyst(img):
     highThresholdRatio = 0.2
     lowThresholdRatio = 0.15
@@ -85,6 +87,7 @@ def DoThreshHyst(img):
     GSup = (GSup == 1) * GSup  
     return GSup
 
+#Integrating all phases of canny edge detection.
 def canny_edges(img):
     img=cv2.GaussianBlur(img,(5,5),0)
     sobelfilterimage,gradient=sobelfilter(img)
